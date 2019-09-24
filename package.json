@@ -7,5 +7,21 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "fridge",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/uws": "^10.149.0",
+    "@hapi/joi": "^16.1.1",
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.1.0",
+    "sequelize": "^5.18.4",
+    "sqlite3": "^4.1.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^6.2.0",
+    "sinon": "^7.4.2",
+    "sinon-chai": "^3.3.0"
+  }
 }
