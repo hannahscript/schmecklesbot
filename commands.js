@@ -1,46 +1,25 @@
 const SchmeckleService = require('./services/schmeckle-service');
-const { validate } = require('./util/validate');
 
-function commandRegister(user, channel) {
+async function commandRegister(user, channel) {
     SchmeckleService.createAccount(user.id).then(success => {
-        if (!success) {
-            console.log('bad ');
+        if (success) {
+            channel.send('Account created.');
         } else {
-            console.log('account created');
+            channel.send('Could not create account.');
         }
     });
 }
 
-function commandBalance(user, channel) {
-    /*SQL.getBalance(user.id, (err, result) => {
-        if (err) {
-            console.log('No account found for ' + author.id);
-        } else {
-            console.log(result);
-        }
-    })*/
-}
-
-async function commandTransfer(user, channel, targetUser, amount) {
-    const argumentsValid = validate(
-        {value: targetUser, pattern: /<@\d{18}>/},
-        {value: amount, pattern: /\d+/},
-    );
-
-    if (!argumentsValid) {
-        channel.send('Usage: transfer [@user] [amount]');
-        return;
+async function commandTransfer(user, channel, {to, amount}) {
+    try {
+        await SchmeckleService.transferFunds(user.id, to, amount);
+        channel.send('Funds transferred successfully.');
+    } catch (err) {
+        channel.send('Recipient not found.')
     }
-
-    const targetUserId = targetUser.match(/<@(\d{18})>/)[1];
-
-    await SchmeckleService.transferFunds(user.id, targetUserId, +amount);
-    channel.send('Funds transferred successfully.');
 }
 
-function commandDebug(user) {
-    if (user.id !== '277146459080491008') return;
-
+async function commandDebug(user) {
     SchmeckleService.findAll().then(result => console.log(result));
 }
 

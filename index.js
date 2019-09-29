@@ -5,15 +5,36 @@ const client = new Discord.Client();
 const { CommandHandler } = require('./util/command-handler');
 const { commandRegister, commandBalance, commandDebug, commandTransfer} = require('./commands');
 const { db } = require('./db');
+const Types = require('./util/types');
 
 function setUpCommandHandler() {
-    const cmdHandler = new CommandHandler(process.env.COMMAND_PREFIX);
-    cmdHandler.addCommand('register', commandRegister);
-    cmdHandler.addCommand('balance', commandBalance);
-    cmdHandler.addCommand('transfer', commandTransfer);
-    cmdHandler.addCommand('debug', commandDebug);
+    const handler = new CommandHandler(process.env.COMMAND_PREFIX);
 
-    return cmdHandler;
+    handler.register({
+        name: 'register',
+        handler: commandRegister
+    });
+
+    handler.register({
+        name: 'balance',
+        handler: commandBalance
+    });
+
+    handler.register({
+        name: 'transfer',
+        handler: commandTransfer,
+        arguments: [
+            {name: 'to', type: Types.Pattern(/<@(\d{18})>/)},
+            {name: 'amount', type: Types.Integer}
+        ]
+    });
+
+    handler.register({
+        name: 'debug',
+        handler: commandDebug
+    });
+
+    return handler;
 }
 
 function setUpClient(cmdHandler) {

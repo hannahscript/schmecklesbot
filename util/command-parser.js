@@ -1,45 +1,50 @@
 function parseCommand(text, prefixLength) {
-    const [prefixedCommand, args] = splitIntoParts(text);
-
-    const command = prefixedCommand.slice(prefixLength);
-    const namedArgs = {};
-    const positionalArgs = [];
-    let lastArgWasTag = false;
-    let lastTag;
-
-    for (const arg of args) {
-        if (lastArgWasTag) {
-            if (arg.startsWith('-')) {
-                if (lastArgWasTag) {
-                    
-                }
-            }
-        }
-    }
-}
-
-function splitIntoParts(text) {
-    const parts = [];
-    let quoting = false;
-    let buffer = '';
+    const state = {
+        tags: {},
+        parts: [],
+        quoting: false,
+        buffer: '',
+        currentTag: undefined
+    };
 
     for (const c of [...text]) {
         if (c === '"') {
-            quoting = !quoting;
-            buffer = tryPushBuffer(buffer, parts);
-        } else if (c === ' ') {
-            if (quoting) {
-                buffer += c;
-            } else {
-                buffer = tryPushBuffer(buffer, parts);
-            }
-        } else buffer += c;
+            state.quoting = !state.quoting;
+            tryPushBuffer(state);
+        } else if (c === ' ' && !state.quoting) {
+            tryPushBuffer(state);
+        } else if (c === ':' && !state.quoting) {
+            if (state.buffer.length === 0) continue;
+
+            state.currentTag = state.buffer;
+            state.buffer = '';
+        } else state.buffer += c;
     }
 
-    tryPushBuffer(buffer, parts);
+    tryPushBuffer(state);
+
+    return {
+        name: state.parts[0].substring(prefixLength),
+        positionalArguments: state.parts.slice(1),
+        namedArguments: state.tags
+    };
 }
 
-function tryPushBuffer(buffer, parts) {
-    if (buffer.length !== 0) parts.push(buffer);
-    return '';
+function tryPushBuffer(state) {
+    if (state.buffer.length === 0) return;
+    
+    if (state.currentTag !== undefined) {
+        state.tags[state.currentTag] = state.buffer;
+        state.currentTag = undefined;
+    } else {
+        state.parts.push(state.buffer);
+    }
+
+    state.buffer = '';
 }
+
+module.exports = {
+    parseCommand
+};
+
+//console.log(parseCommand('$hello test x:10 ok foo:"et cet::e:ra " lol'));
