@@ -10,6 +10,20 @@ function Pattern(pattern) {
     };
 }
 
+function DiscordMention() {
+    return Pattern(/^<@(\d{18})>$/);
+}
+
+function Text(minLegth, maxLength) {
+    return arg => {
+        if (arg.length < minLegth || arg.length > maxLength) {
+            return {error: 'Argument too short or too long'};
+        }
+
+        return {value: arg};
+    }
+}
+
 function oneOf(...types) {
     return arg => {
         for (const type of types) {
@@ -26,5 +40,7 @@ function oneOf(...types) {
 module.exports = {
     Integer,
     Pattern,
+    DiscordMention,
+    Text,
     oneOf
 };

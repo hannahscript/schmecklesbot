@@ -33,7 +33,7 @@ class CommandHandler {
 
         const commandDefinition = this.commands[parsedCommand.name];
         if (!commandDefinition) {
-            msg.channel.send(`Command ${commandData.name} not found`);
+            await msg.channel.send(`Command ${commandData.name} not found`);
             return;
         }
 
@@ -46,7 +46,7 @@ class CommandHandler {
         for (const argument in argumentResults) {
             const result = argumentResults[argument];
             if (result.error) {
-                msg.channel.send(commandDefinition.usage);
+                await msg.channel.send(commandDefinition.usage || 'There was a problem with the supplied parameters. Sadly, this command\'s usage appears to be undocumented');
                 return;
             }
 

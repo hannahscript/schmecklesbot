@@ -11,6 +11,7 @@
   "dependencies": {
     "@discordjs/uws": "^10.149.0",
     "@hapi/joi": "^16.1.1",
+    "continuation-local-storage": "^3.2.1",
     "discord.js": "^11.5.1",
     "dotenv": "^8.1.0",
     "sequelize": "^5.18.4",

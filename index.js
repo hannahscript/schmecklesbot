@@ -1,9 +1,8 @@
 require('dotenv').config();
 const logger = require('./logger');
-const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = require('./client');
 const { CommandHandler } = require('./util/command-handler');
-const { commandRegister, commandBalance, commandDebug, commandTransfer} = require('./commands');
+const Command = require('./commands');
 const { db } = require('./db');
 const Types = require('./util/types');
 
@@ -12,36 +11,100 @@ function setUpCommandHandler() {
 
     handler.register({
         name: 'register',
-        handler: commandRegister
+        handler: Command.register
     });
 
     handler.register({
         name: 'balance',
-        handler: commandBalance
+        handler: Command.balance
     });
 
     handler.register({
         name: 'transfer',
-        handler: commandTransfer,
+        handler: Command.transfer,
         arguments: [
-            {name: 'to', type: Types.Pattern(/<@(\d{18})>/)},
+            {name: 'to', type: Types.DiscordMention()},
             {name: 'amount', type: Types.Integer}
         ]
     });
 
     handler.register({
+        name: 'info',
+        handler: Command.info,
+        arguments: [
+            {name: 'bet', type: Types.Integer}
+        ]
+    });
+
+    handler.register({
+        name: 'bet',
+        handler: Command.bet,
+        arguments: [
+            {name: 'challenged', type: Types.DiscordMention()},
+            {name: 'judge', type: Types.DiscordMention()},
+            {name: 'details', type: Types.Text(1, 250)},
+            {name: 'amount', type: Types.Integer}
+        ]
+    });
+
+    handler.register({
+        name: 'accept',
+        handler: Command.accept,
+        arguments: [
+            {name: 'bet', type: Types.Integer}
+        ]
+    });
+
+    handler.register({
+        name: 'reject',
+        handler: Command.reject,
+        arguments: [
+            {name: 'bet', type: Types.Integer}
+        ]
+    });
+
+    handler.register({
+        name: 'judge',
+        handler: Command.judge,
+        arguments: [
+            {name: 'bet', type: Types.Integer},
+            {name: 'winner', type: Types.DiscordMention()},
+        ]
+    });
+
+    handler.register({
+        name: 'forceAccept',
+        handler: Command.forceAccept,
+        arguments: [
+            {name: 'bet', type: Types.Integer},
+            {name: 'acceptingUser', type: Types.DiscordMention()}
+        ]
+    });
+
+    handler.register({
+        name: 'forceRegister',
+        handler: Command.forceRegister,
+        arguments: [
+            {name: 'newUser', type: Types.DiscordMention()}
+        ]
+    });
+
+    handler.register({
         name: 'debug',
-        handler: commandDebug
+        handler: Command.debug
     });
 
     return handler;
 }
 
 function setUpClient(cmdHandler) {
-    client.on('ready', () => logger.info('Bot is ready'));
-
-    client.on('message', msg => {
-        cmdHandler.handle(msg);
+    client.on('message', async msg => {
+        try {
+            await cmdHandler.handle(msg);
+        } catch(err) {
+            logger.error(err);
+        }
+        
     });
 }
 

@@ -46,5 +46,3 @@ function tryPushBuffer(state) {
 module.exports = {
     parseCommand
 };
-
-//console.log(parseCommand('$hello test x:10 ok foo:"et cet::e:ra " lol'));
