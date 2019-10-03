@@ -95,7 +95,7 @@ async function forceAccept(user, channel, {bet, acceptingUser}) {
         return;
     }
 
-    return commandAccept({id: acceptingUser}, channel, {bet});
+    return accept({id: acceptingUser}, channel, {bet});
 }
 
 async function accept(user, channel, {bet}) {
@@ -207,6 +207,21 @@ async function balance(user, channel) {
     }
 }
 
+async function payday(user, channel, {to, amount}) {
+    if (user.id !== process.env.ADMIN_USER_ID) {
+        return;
+    }
+
+    try {
+        await SchmeckleService.addFunds(to, amount);
+        const user = await client.fetchUser(to);
+        await channel.send(`<@${user.id}>, you have been awarded ${amount} schmeckles by the Central Schmeckles Bank.`);
+    } catch (err) {
+        await channel.send('Recipient not found.');
+    }
+    
+}
+
 module.exports = {
     register,
     transfer,
@@ -218,5 +233,6 @@ module.exports = {
     balance,
     info,
     forceAccept,
-    forceRegister
+    forceRegister,
+    payday
 };

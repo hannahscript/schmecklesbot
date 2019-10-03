@@ -33,7 +33,7 @@ class CommandHandler {
 
         const commandDefinition = this.commands[parsedCommand.name];
         if (!commandDefinition) {
-            await msg.channel.send(`Command ${commandData.name} not found`);
+            await msg.channel.send(`Command ${parsedCommand.name} not found`);
             return;
         }
 

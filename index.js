@@ -29,6 +29,15 @@ function setUpCommandHandler() {
     });
 
     handler.register({
+        name: 'payday',
+        handler: Command.payday,
+        arguments: [
+            {name: 'to', type: Types.DiscordMention()},
+            {name: 'amount', type: Types.Integer}
+        ]
+    });
+
+    handler.register({
         name: 'info',
         handler: Command.info,
         arguments: [

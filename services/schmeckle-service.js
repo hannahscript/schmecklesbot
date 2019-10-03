@@ -162,15 +162,23 @@ class SchmeckleService {
         });
     }
 
+    async addFunds(userId, amount) {
+        await this._addFunds(userId, amount);
+    }
+
     async transferFunds(senderId, recipientId, amount) {
         return db.transaction(async (transaction) => {
-            const funds = await this._getBalance(userId, transaction);
+            const funds = await this._getBalance(senderId, transaction);
+
+            logger.info(funds);
 
             if (funds < amount) {
                 throw new Error('Not enough funds');
             }
 
             const recipientRecord = await Account.findByPk(recipientId, {transaction});
+
+            logger.info(recipientRecord.dataValues);
 
             await Account.update({balance: funds - amount}, {
                 transaction,
